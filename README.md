@@ -1,133 +1,74 @@
 # 💎 AI Data Analyst Workspace
 
-🚀 A multi-tool AI-powered workspace designed for data learners, analysts, and developers.
+🔥 Free AI-powered workspace for Data Analysts.
 
-Generate:
+Generate SQL queries, Excel formulas, and data insights instantly — no login required.
 
-✅ SQL Queries from natural language  
-✅ Excel formulas instantly  
-✅ Data analysis insights and recommendations  
-
-Built using Streamlit and AI APIs.
+👉 **LIVE APP:**  
+https://ai-data-copilot-6c2n5jhpuzqkkgz2wrk2i8.streamlit.app/
 
 ---
 
-## 🧠 Project Overview
+## 🚀 Features
 
-AI Data Analyst Workspace is a professional AI wrapper application that transforms plain English into practical data solutions.
-
-Instead of a general AI assistant, this tool focuses on real analyst workflows:
-
-- Natural Language → SQL Query generation
-- Excel formula building
-- Data insight explanations
-
-The app is designed to feel like a specialized AI workspace rather than a generic chatbot.
-
----
-
-## ✨ Features
-
-### 🧠 SQL Generator (Primary Feature)
-
-- Generate optimized SQL queries
-- Supports multiple databases:
-  - PostgreSQL
-  - MySQL
-  - SQL Server
-  - SQLite
-- Structured reasoning output
-- Performance suggestions
+### 🧠 AI SQL Generator
+- Generate optimized SQL queries instantly
+- Supports PostgreSQL, MySQL, SQL Server, SQLite
+- Explanation + optimization tips included
+- Beginner → Advanced skill levels
 
 ### 📊 Excel Formula Builder
-
-- Create Excel formulas from descriptions
-- Beginner-friendly explanations
-- Productivity-focused responses
+- Convert natural language into Excel formulas
+- Clear explanations included
+- Ideal for analysts, students, and professionals
 
 ### 📈 Data Insight Explainer
-
-- Analyze data scenarios
-- Generate insights
-- Provide recommendations
+- Describe a data scenario
+- Get analysis, insights, and recommendations
+- Helps understand trends and decisions
 
 ---
 
-## 🛠️ Tech Stack
+## ⭐ Why This Tool?
+
+Many AI tools feel like generic chatbots.
+
+This workspace is designed specifically for:
+
+✅ Data Analysts  
+✅ SQL learners  
+✅ Excel users  
+✅ Business analysts  
+✅ Students learning data skills
+
+---
+
+## 🖥 Live Demo
+
+Try it here:
+
+👉 https://ai-data-copilot-6c2n5jhpuzqkkgz2wrk2i8.streamlit.app/
+
+---
+
+## 🛠 Tech Stack
 
 - Python
 - Streamlit
-- Requests
-- AI API (Grok or compatible LLM)
+- Groq API (OpenAI-compatible)
+- Llama 3.3 Model
 
 ---
 
-## ⚙️ Installation (Local Setup)
+## 📦 Installation (Local)
 
-Clone repository:
+Clone repo:
 
+```bash
+git clone https://github.com/Prateekray/ai-data-copilot.git
+cd ai-data-copilot
 
-Install dependencies:
+pip install -r requirements.txt
 
+streamlit run app.py
 
-Run app:
-
-
----
-
-## 🔐 Environment Setup (API Key)
-
-Create Streamlit secrets configuration:
-
-
-In Streamlit Cloud:
-
-App Settings → Secrets.
-
----
-
-## 🚀 Deployment
-
-Recommended free deployment:
-
-👉 Streamlit Community Cloud
-
-Steps:
-
-1. Push repository to GitHub
-2. Go to https://share.streamlit.io
-3. Select repository
-4. Choose `app.py`
-5. Deploy
-
----
-
-## 🎯 Purpose
-
-This project demonstrates:
-
-- AI wrapper architecture
-- Prompt engineering
-- UX-driven AI design
-- Multi-tool AI workflow interfaces
-
----
-
-## 📌 Future Improvements
-
-- Advanced SQL optimization
-- Schema analyzer
-- AI query debugger
-- Pro feature tier
-
----
-
-## 🤝 Contributions
-
-Contributions and suggestions are welcome.
-
----
-
-## 📄 License
-
-MIT License
