@@ -76,30 +76,40 @@ def call_ai(prompt):
 
 def render_response(response):
 
-    # CLEAN unwanted markdown from AI
+    # Remove markdown code fences
     response = response.replace("```sql","").replace("```","")
 
-    if "SQL Query" in response:
+    lines = response.split("\n")
 
-        parts = response.split("Explanation")
+    sql_lines = []
+    other_lines = []
 
-        sql_part = parts[0].replace("SQL Query:","").strip()
-        rest = "Explanation" + parts[1] if len(parts) > 1 else ""
+    sql_keywords = ("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "WITH")
+
+    for line in lines:
+        if line.strip().upper().startswith(sql_keywords):
+            sql_lines.append(line)
+        elif sql_lines:
+            # Continue collecting SQL until blank line
+            if line.strip() == "":
+                continue
+            sql_lines.append(line)
+        else:
+            other_lines.append(line)
+
+    sql_text = "\n".join(sql_lines).strip()
+    rest_text = "\n".join(other_lines).strip()
+
+    if sql_text:
 
         st.subheader("🧠 SQL Query")
-        st.code(sql_part, language="sql")
+        st.code(sql_text, language="sql")
 
         st.subheader("📘 Explanation & Optimization")
-        st.markdown(rest)
-
-    elif "Formula" in response:
-
-        st.subheader("📊 Excel Result")
-        st.markdown(response)
+        st.markdown(rest_text)
 
     else:
 
-        st.subheader("📈 Insights")
         st.markdown(response)
 
 # ===================================
