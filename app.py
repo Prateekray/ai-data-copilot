@@ -76,7 +76,7 @@ def call_ai(prompt):
 
 def render_response(response):
 
-    # Remove markdown code fences
+    # Clean markdown fences
     response = response.replace("```sql","").replace("```","")
 
     lines = response.split("\n")
@@ -84,15 +84,21 @@ def render_response(response):
     sql_lines = []
     other_lines = []
 
-    sql_keywords = ("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "WITH")
+    sql_started = False
+
+    stop_words = ("Explanation", "Optimization", "Tips", "Example")
 
     for line in lines:
-        if line.strip().upper().startswith(sql_keywords):
-            sql_lines.append(line)
-        elif sql_lines:
-            # Continue collecting SQL until blank line
-            if line.strip() == "":
-                continue
+
+        # Detect start of SQL
+        if line.strip().upper().startswith(("SELECT","INSERT","UPDATE","DELETE","CREATE","WITH")):
+            sql_started = True
+
+        # Detect end of SQL
+        if any(word in line for word in stop_words):
+            sql_started = False
+
+        if sql_started:
             sql_lines.append(line)
         else:
             other_lines.append(line)
@@ -101,15 +107,12 @@ def render_response(response):
     rest_text = "\n".join(other_lines).strip()
 
     if sql_text:
-
         st.subheader("🧠 SQL Query")
         st.code(sql_text, language="sql")
 
         st.subheader("📘 Explanation & Optimization")
         st.markdown(rest_text)
-
     else:
-
         st.markdown(response)
 
 # ===================================
