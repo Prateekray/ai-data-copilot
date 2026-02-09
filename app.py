@@ -57,7 +57,7 @@ def call_ai(prompt):
     url = "https://api.groq.com/openai/v1/chat/completions"
 
     data = {
-        "model": "llama3-70b-8192",   # free strong Groq model
+        "model": "llama3-70b-8192",
         "messages": [
             {"role": "user", "content": prompt}
         ]
@@ -67,7 +67,12 @@ def call_ai(prompt):
 
     result = response.json()
 
+    # DEBUG MODE
+    if "choices" not in result:
+        return f"API ERROR:\n{result}"
+
     return result["choices"][0]["message"]["content"]
+
 
 # ===================================
 # STREAM OUTPUT
