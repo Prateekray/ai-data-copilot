@@ -76,16 +76,18 @@ def call_ai(prompt):
 
 def render_response(response):
 
-    # Try to split structured sections
+    # CLEAN unwanted markdown from AI
+    response = response.replace("```sql","").replace("```","")
+
     if "SQL Query" in response:
 
         parts = response.split("Explanation")
 
-        sql_part = parts[0]
+        sql_part = parts[0].replace("SQL Query:","").strip()
         rest = "Explanation" + parts[1] if len(parts) > 1 else ""
 
         st.subheader("🧠 SQL Query")
-        st.code(sql_part)
+        st.code(sql_part, language="sql")
 
         st.subheader("📘 Explanation & Optimization")
         st.markdown(rest)
