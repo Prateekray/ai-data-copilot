@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import time
 
 # ===================================
 # PAGE CONFIG
@@ -26,11 +25,10 @@ if "database_type" not in st.session_state:
 # ===================================
 
 st.title("💎 AI Data Analyst Workspace")
-
 st.success("SQL • Excel • Data Insights | Live AI Tool")
 
 # ===================================
-# GLOBAL SETTINGS (Skill level only)
+# GLOBAL SETTINGS
 # ===================================
 
 st.session_state.skill_level = st.selectbox(
@@ -67,26 +65,40 @@ def call_ai(prompt):
 
     result = response.json()
 
-    # DEBUG MODE
     if "choices" not in result:
         return f"API ERROR:\n{result}"
 
     return result["choices"][0]["message"]["content"]
 
-
 # ===================================
-# STREAM OUTPUT
+# SMART RESPONSE RENDERER
 # ===================================
 
-def stream_output(text):
+def render_response(response):
 
-    placeholder = st.empty()
-    streamed = ""
+    # Try to split structured sections
+    if "SQL Query" in response:
 
-    for char in text:
-        streamed += char
-        placeholder.markdown(streamed)
-        time.sleep(0.001)
+        parts = response.split("Explanation")
+
+        sql_part = parts[0]
+        rest = "Explanation" + parts[1] if len(parts) > 1 else ""
+
+        st.subheader("🧠 SQL Query")
+        st.code(sql_part)
+
+        st.subheader("📘 Explanation & Optimization")
+        st.markdown(rest)
+
+    elif "Formula" in response:
+
+        st.subheader("📊 Excel Result")
+        st.markdown(response)
+
+    else:
+
+        st.subheader("📈 Insights")
+        st.markdown(response)
 
 # ===================================
 # TABS
@@ -99,14 +111,13 @@ tab_sql, tab_excel, tab_insight = st.tabs([
 ])
 
 # ===================================
-# SQL GENERATOR TAB
+# SQL TAB
 # ===================================
 
 with tab_sql:
 
     st.subheader("SQL Generator")
 
-    # Database selector ONLY here
     st.session_state.database_type = st.selectbox(
         "Database Type",
         ["PostgreSQL","MySQL","SQL Server","SQLite"],
@@ -140,10 +151,10 @@ Optimization Tips
 """
 
         result = call_ai(prompt)
-        stream_output(result)
+        render_response(result)
 
 # ===================================
-# EXCEL FORMULA TAB
+# EXCEL TAB
 # ===================================
 
 with tab_excel:
@@ -169,10 +180,10 @@ Tips
 """
 
         result = call_ai(prompt)
-        stream_output(result)
+        render_response(result)
 
 # ===================================
-# DATA INSIGHT TAB
+# INSIGHT TAB
 # ===================================
 
 with tab_insight:
@@ -198,4 +209,4 @@ Recommendations
 """
 
         result = call_ai(prompt)
-        stream_output(result)
+        render_response(result)
