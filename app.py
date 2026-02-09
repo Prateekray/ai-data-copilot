@@ -76,8 +76,8 @@ def call_ai(prompt):
 
 def render_response(response):
 
-    # Clean markdown fences
-    response = response.replace("```sql","").replace("```","")
+    # Remove markdown code fences
+    response = response.replace("```sql", "").replace("```", "")
 
     lines = response.split("\n")
 
@@ -91,7 +91,7 @@ def render_response(response):
     for line in lines:
 
         # Detect start of SQL
-        if line.strip().upper().startswith(("SELECT","INSERT","UPDATE","DELETE","CREATE","WITH")):
+        if line.strip().upper().startswith(("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "WITH")):
             sql_started = True
 
         # Detect end of SQL
@@ -106,6 +106,16 @@ def render_response(response):
     sql_text = "\n".join(sql_lines).strip()
     rest_text = "\n".join(other_lines).strip()
 
+    # Clean AI headings automatically
+    rest_text = (
+        rest_text
+        .replace("SQL Query:", "")
+        .replace("Explanation:", "")
+        .replace("## SQL Query", "")
+        .replace("### SQL Query", "")
+        .strip()
+    )
+
     if sql_text:
         st.subheader("🧠 SQL Query")
         st.code(sql_text, language="sql")
@@ -114,16 +124,6 @@ def render_response(response):
         st.markdown(rest_text)
     else:
         st.markdown(response)
-
-# ===================================
-# TABS
-# ===================================
-
-tab_sql, tab_excel, tab_insight = st.tabs([
-    "🧠 SQL Generator",
-    "📊 Excel Formula Builder",
-    "📈 Data Insight Explainer"
-])
 
 # ===================================
 # SQL TAB
