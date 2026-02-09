@@ -71,58 +71,36 @@ def call_ai(prompt):
     return result["choices"][0]["message"]["content"]
 
 # ===================================
-# SMART RESPONSE RENDERER
-# ===================================
-
-# ===================================
-# SMART RESPONSE RENDERER
+# SMART RESPONSE RENDERER (PRO VERSION)
 # ===================================
 
 def render_response(response):
 
-    # Remove markdown code fences
-    response = response.replace("```sql", "").replace("```", "")
+    sql_text = ""
+    rest_text = response
 
-    lines = response.split("\n")
+    # Extract SQL ONLY from markdown code block
+    if "```sql" in response:
 
-    sql_lines = []
-    other_lines = []
+        parts = response.split("```sql")
 
-    sql_started = False
+        if len(parts) > 1:
+            sql_part = parts[1].split("```")[0]
+            sql_text = sql_part.strip()
 
-    stop_words = ("Explanation", "Optimization", "Tips", "Example")
+            # remove sql block from explanation
+            rest_text = response.replace(f"```sql{sql_part}```", "")
 
-    for line in lines:
-
-        # Detect start of SQL
-        if line.strip().upper().startswith(
-            ("SELECT", "INSERT", "UPDATE", "DELETE", "CREATE", "WITH")
-        ):
-            sql_started = True
-
-        # Detect end of SQL when explanation starts
-        if any(word in line for word in stop_words):
-            sql_started = False
-
-        if sql_started:
-            sql_lines.append(line)
-        else:
-            other_lines.append(line)
-
-    sql_text = "\n".join(sql_lines).strip()
-    rest_text = "\n".join(other_lines).strip()
-
-    # Clean unwanted AI headings automatically
+    # Clean unwanted headings
     rest_text = (
         rest_text
         .replace("SQL Query:", "")
-        .replace("Explanation:", "")
         .replace("## SQL Query", "")
         .replace("### SQL Query", "")
+        .replace("Explanation:", "")
         .strip()
     )
 
-    # Render output
     if sql_text:
 
         st.subheader("🧠 SQL Query")
@@ -135,13 +113,18 @@ def render_response(response):
         st.markdown(response)
 
 # ===================================
-# SQL TAB
+# TABS
 # ===================================
+
 tab_sql, tab_excel, tab_insight = st.tabs([
     "🧠 SQL Generator",
     "📊 Excel Formula Builder",
     "📈 Data Insight Explainer"
 ])
+
+# ===================================
+# SQL TAB
+# ===================================
 
 with tab_sql:
 
@@ -172,6 +155,9 @@ Table: {table}
 Columns: {columns}
 Goal: {goal}
 Filters: {filters}
+
+IMPORTANT:
+Return SQL ONLY inside ```sql``` code block.
 
 Provide:
 SQL Query
