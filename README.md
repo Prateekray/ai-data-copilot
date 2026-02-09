@@ -62,11 +62,6 @@ The app is designed to feel like a specialized AI workspace rather than a generi
 
 ---
 
-## 📂 Project Structure
-
-
----
-
 ## ⚙️ Installation (Local Setup)
 
 Clone repository:
