@@ -1,151 +1,175 @@
 import streamlit as st
 import requests
+import time
 
 # ===================================
 # PAGE CONFIG
 # ===================================
 
-st.set_page_config(page_title="AI Data Analyst Copilot", layout="wide")
-
-st.title("AI Data Analyst Copilot")
-
-# ===================================
-# SESSION STATE (Retention System)
-# ===================================
-
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-if "example" not in st.session_state:
-    st.session_state.example = ""
-
-# ===================================
-# SIDEBAR (Recent Results)
-# ===================================
-
-st.sidebar.title("Recent Results")
-
-for item in reversed(st.session_state.history[-5:]):
-    st.sidebar.code(item)
-
-# ===================================
-# MODE SELECTOR (Professional UX)
-# ===================================
-
-mode = st.selectbox(
-    "Choose Mode:",
-    ["SQL Generator", "Excel Formula", "Data Insight"]
+st.set_page_config(
+    page_title="AI Data Analyst Workspace",
+    layout="wide"
 )
 
 # ===================================
-# DISCOVERY MAGNET (Example Templates)
+# SESSION STATE
 # ===================================
 
-st.markdown("### Try Example Tasks")
+if "skill_level" not in st.session_state:
+    st.session_state.skill_level = "Beginner"
 
-example1 = "Create SQL query to find top 10 customers by revenue"
-example2 = "Excel formula to calculate percentage growth"
-example3 = "Explain sales dataset trends for last quarter"
-
-col1, col2, col3 = st.columns(3)
-
-if col1.button("SQL Example"):
-    st.session_state.example = example1
-
-if col2.button("Excel Example"):
-    st.session_state.example = example2
-
-if col3.button("Insight Example"):
-    st.session_state.example = example3
+if "database_type" not in st.session_state:
+    st.session_state.database_type = "PostgreSQL"
 
 # ===================================
-# USER INPUT
+# HEADER
 # ===================================
 
-user_input = st.text_area(
-    "Describe your task:",
-    value=st.session_state.example
-)
+st.title("💎 AI Data Analyst Workspace")
+st.success("SQL • Excel • Data Insights | Live AI Tool")
 
 # ===================================
-# GENERATE BUTTON
+# SETTINGS
 # ===================================
 
-if st.button("Generate"):
+colA, colB = st.columns(2)
 
-    if user_input.strip() == "":
-        st.warning("Please enter a request.")
+with colA:
+    st.session_state.skill_level = st.selectbox(
+        "Skill Level",
+        ["Beginner","Intermediate","Advanced"]
+    )
 
-    else:
+with colB:
+    st.session_state.database_type = st.selectbox(
+        "Database Type",
+        ["PostgreSQL","MySQL","SQL Server","SQLite"]
+    )
 
-        # 🔥 Replace with your real Grok API key
-        api_key = "YOUR_GROK_API_KEY"
+# ===================================
+# TABS
+# ===================================
 
-        # Prompt engineering based on mode
-        if mode == "SQL Generator":
-            prompt = f"You are expert SQL developer. Convert this into optimized SQL query:\n{user_input}"
+tab_sql, tab_excel, tab_insight = st.tabs([
+    "🧠 SQL Generator",
+    "📊 Excel Formula Builder",
+    "📈 Data Insight Explainer"
+])
 
-        elif mode == "Excel Formula":
-            prompt = f"You are Excel expert. Generate correct Excel formula with explanation:\n{user_input}"
+# ===================================
+# STREAM FUNCTION
+# ===================================
 
-        else:
-            prompt = f"You are senior data analyst. Provide clear data insights and explanation:\n{user_input}"
+def stream_output(text):
+    placeholder = st.empty()
+    streamed = ""
+    for char in text:
+        streamed += char
+        placeholder.markdown(streamed)
+        time.sleep(0.001)
 
-        # 🔥 Replace with real Grok API endpoint
-        url = "GROK_API_ENDPOINT"
+# ===================================
+# API CALL FUNCTION
+# ===================================
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+def call_ai(prompt):
 
-        data = {
-            "prompt": prompt
-        }
+    api_key = st.secrets["GROK_API_KEY"]
 
-        try:
-            response = requests.post(url, headers=headers, json=data)
-            result = response.json()
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
 
-            # Convert result safely to string
-            output_text = str(result)
+    url = "GROK_API_ENDPOINT"
 
-            # ===================================
-            # DISPLAY RESULT (Growth Feature)
-            # ===================================
+    response = requests.post(url, headers=headers, json={"prompt": prompt})
 
-            st.subheader("AI Output")
+    return str(response.json())
 
-            st.code(output_text)
+# ===================================
+# SQL TAB
+# ===================================
 
-            # Save history (Retention feature)
-            st.session_state.history.append(output_text)
+with tab_sql:
 
-            # ===================================
-            # COPY & SHARE (Viral Growth Feature)
-            # ===================================
+    table = st.text_input("Table Name")
+    columns = st.text_input("Columns")
+    goal = st.text_area("Goal")
+    filters = st.text_input("Filters")
 
-            st.markdown("### Copy & Share")
+    if st.button("🚀 Generate SQL"):
 
-            st.text_area(
-                "Quick Copy Box:",
-                value=output_text,
-                height=150
-            )
+        prompt = f"""
+SQL Expert AI.
 
-            share_text = f"""
-I just generated this using AI Data Analyst Copilot:
+Skill level: {st.session_state.skill_level}
+Database: {st.session_state.database_type}
 
-{output_text}
+Table: {table}
+Columns: {columns}
+Goal: {goal}
+Filters: {filters}
 
-Try it here: YOUR_APP_LINK
+Provide:
+SQL Query
+Explanation
+Optimization Tips
 """
 
-            st.text_area(
-                "Share this on LinkedIn / X / Reddit:",
-                value=share_text,
-                height=200
-            )
+        result = call_ai(prompt)
+        stream_output(result)
 
-        except Exception as e:
-            st.error(f"Error: {e}")
+# ===================================
+# EXCEL TAB
+# ===================================
+
+with tab_excel:
+
+    excel_task = st.text_area("Describe Excel task")
+
+    if st.button("🚀 Generate Excel Formula"):
+
+        prompt = f"""
+Excel Expert AI.
+
+Skill level: {st.session_state.skill_level}
+
+Task:
+{excel_task}
+
+Provide:
+Formula
+Explanation
+Tips
+"""
+
+        result = call_ai(prompt)
+        stream_output(result)
+
+# ===================================
+# DATA INSIGHT TAB
+# ===================================
+
+with tab_insight:
+
+    insight_task = st.text_area("Describe data scenario")
+
+    if st.button("🚀 Generate Insights"):
+
+        prompt = f"""
+Data Analyst AI.
+
+Skill level: {st.session_state.skill_level}
+
+Scenario:
+{insight_task}
+
+Provide:
+Insights
+Analysis
+Recommendations
+"""
+
+        result = call_ai(prompt)
+        stream_output(result)
