@@ -54,11 +54,20 @@ def call_ai(prompt):
         "Content-Type": "application/json"
     }
 
-    url = "https://api.groq.com/openai/v1"
+    url = "https://api.groq.com/openai/v1/chat/completions"
 
-    response = requests.post(url, headers=headers, json={"prompt": prompt})
+    data = {
+        "model": "llama3-70b-8192",   # free strong Groq model
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
 
-    return str(response.json())
+    response = requests.post(url, headers=headers, json=data)
+
+    result = response.json()
+
+    return result["choices"][0]["message"]["content"]
 
 # ===================================
 # STREAM OUTPUT
