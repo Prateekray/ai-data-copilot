@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # ===================================
-# SESSION STATE
+# SESSION STATE DEFAULTS
 # ===================================
 
 if "skill_level" not in st.session_state:
@@ -26,47 +26,20 @@ if "database_type" not in st.session_state:
 # ===================================
 
 st.title("💎 AI Data Analyst Workspace")
+
 st.success("SQL • Excel • Data Insights | Live AI Tool")
 
 # ===================================
-# SETTINGS
+# GLOBAL SETTINGS (Skill level only)
 # ===================================
 
-colA, colB = st.columns(2)
-
-with colA:
-    st.session_state.skill_level = st.selectbox(
-        "Skill Level",
-        ["Beginner","Intermediate","Advanced"]
+st.session_state.skill_level = st.selectbox(
+    "Skill Level",
+    ["Beginner","Intermediate","Advanced"],
+    index=["Beginner","Intermediate","Advanced"].index(
+        st.session_state.skill_level
     )
-
-with colB:
-    st.session_state.database_type = st.selectbox(
-        "Database Type",
-        ["PostgreSQL","MySQL","SQL Server","SQLite"]
-    )
-
-# ===================================
-# TABS
-# ===================================
-
-tab_sql, tab_excel, tab_insight = st.tabs([
-    "🧠 SQL Generator",
-    "📊 Excel Formula Builder",
-    "📈 Data Insight Explainer"
-])
-
-# ===================================
-# STREAM FUNCTION
-# ===================================
-
-def stream_output(text):
-    placeholder = st.empty()
-    streamed = ""
-    for char in text:
-        streamed += char
-        placeholder.markdown(streamed)
-        time.sleep(0.001)
+)
 
 # ===================================
 # API CALL FUNCTION
@@ -88,10 +61,45 @@ def call_ai(prompt):
     return str(response.json())
 
 # ===================================
-# SQL TAB
+# STREAM OUTPUT
+# ===================================
+
+def stream_output(text):
+
+    placeholder = st.empty()
+    streamed = ""
+
+    for char in text:
+        streamed += char
+        placeholder.markdown(streamed)
+        time.sleep(0.001)
+
+# ===================================
+# TABS
+# ===================================
+
+tab_sql, tab_excel, tab_insight = st.tabs([
+    "🧠 SQL Generator",
+    "📊 Excel Formula Builder",
+    "📈 Data Insight Explainer"
+])
+
+# ===================================
+# SQL GENERATOR TAB
 # ===================================
 
 with tab_sql:
+
+    st.subheader("SQL Generator")
+
+    # Database selector ONLY here
+    st.session_state.database_type = st.selectbox(
+        "Database Type",
+        ["PostgreSQL","MySQL","SQL Server","SQLite"],
+        index=["PostgreSQL","MySQL","SQL Server","SQLite"].index(
+            st.session_state.database_type
+        )
+    )
 
     table = st.text_input("Table Name")
     columns = st.text_input("Columns")
@@ -121,10 +129,12 @@ Optimization Tips
         stream_output(result)
 
 # ===================================
-# EXCEL TAB
+# EXCEL FORMULA TAB
 # ===================================
 
 with tab_excel:
+
+    st.subheader("Excel Formula Builder")
 
     excel_task = st.text_area("Describe Excel task")
 
@@ -152,6 +162,8 @@ Tips
 # ===================================
 
 with tab_insight:
+
+    st.subheader("Data Insight Explainer")
 
     insight_task = st.text_area("Describe data scenario")
 
