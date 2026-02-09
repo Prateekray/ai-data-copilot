@@ -54,7 +54,7 @@ def call_ai(prompt):
         "Content-Type": "application/json"
     }
 
-    url = https://api.groq.com/openai/v1
+    url = "https://api.groq.com/openai/v1"
 
     response = requests.post(url, headers=headers, json={"prompt": prompt})
 
